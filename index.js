@@ -1,5 +1,6 @@
 export { default as useGrapes } from './useGrapes'
-export { default as useStyleManager } from './useStyleManager'
-export { default as useSelectorManager } from './useSelectorManager'
+export { default as useStyleProps } from './useStyleProps'
+export { default as useSelectors } from './useSelectors'
 export { default as useComponentTree } from './useComponentTree'
 export { default as useSelectedComponent } from './useSelectedComponent'
+export { default as useStyles } from './useStyles'
