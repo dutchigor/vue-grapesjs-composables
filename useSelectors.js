@@ -27,7 +27,7 @@ export default function (grapes, config = {}) {
   const sm = reactive({ state, classes, activeSelector: '' })
 
   // Update the reactive state based on the active selector in GrapesJs
-  const updateSM = () => {
+  function updateSM() {
     // Fetch the latest selector state from GrapesJs
     sm.state.options = grapes.editor.Selectors.getStates().map(state => state.attributes)
     sm.state.selected = grapes.editor.Selectors.getState()

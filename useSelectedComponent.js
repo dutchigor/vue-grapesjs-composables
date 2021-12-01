@@ -10,10 +10,12 @@ export default function (grapes) {
   })
 
   // Update the reactive set of attribute
-  const updateAttr = (comp) => selected.attributes = comp.getAttributes()
+  function updateAttr(comp) {
+    selected.attributes = comp.getAttributes()
+  }
 
   // Update the reference to the selected component and its values.
-  const updateComp = (comp) => {
+  function updateComp(comp) {
     selected.component = comp
     selected.style = comp.getStyle()
     updateAttr(comp)

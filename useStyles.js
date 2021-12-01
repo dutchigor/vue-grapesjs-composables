@@ -35,7 +35,7 @@ export default function (grapes) {
   const sm = reactive({ cssRules, selected })
 
   // Update the reactive state based on the active selector in GrapesJs
-  const updateSM = () => {
+  function updateSM() {
     // Fetch the latest rules from GrapesJs
     sm.cssRules.length = 0
     sm.cssRules.push(...grapes.editor.Css.getRules())

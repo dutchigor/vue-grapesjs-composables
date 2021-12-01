@@ -19,7 +19,7 @@ export default function (grapes, options) {
   const styles = reactive({})
 
   // Function to update all style properties to the currently active CSS rule.
-  const updateStyles = () => {
+  function updateStyles() {
     for (const style in styles) {
       styles[style].updateStyle()
     }

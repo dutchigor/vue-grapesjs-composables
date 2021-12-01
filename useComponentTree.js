@@ -21,7 +21,7 @@ export default function (grapes) {
   const tree = reactive([])
 
   // Update the reactive tree based on the tree in GrapesJs
-  const updateTree = () => {
+  function updateTree() {
     tree.length = 0
     const flatComps = flattenComponents(grapes.editor.getComponents().models)
     tree.push(...flatComps)
