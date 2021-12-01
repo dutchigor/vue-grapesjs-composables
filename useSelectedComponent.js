@@ -1,7 +1,7 @@
 import { reactive } from "vue"
 
-// Crate variable to hold information on currently selected component.
 export default function (grapes) {
+  // Create variable to hold information on currently selected component.
   const selected = reactive({
     component: {},
     style: {},
