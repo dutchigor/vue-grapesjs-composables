@@ -1,22 +1,27 @@
 import { reactive, readonly } from "vue"
 
-export default function (grapes, config = {}) {
-  // Create variable to hold information on asset manager status
-  // and available assets.
-  const am = reactive({
-    show: false,
-    assets: [],
-    types: [],
-    options: {},
-    close() { },
-    select() { },
-    remove() { },
-  })
+export default function (grapes) {
+  // Ensure GrapesJs is not yet initalised
+  if (grapes.initialized) throw new Error('useAssetManager must be executed before GrapesJs is initialised (onMount where useGrapes is executed)')
 
-  // Configure GrapesJs Asset Manager
-  grapes.config.assetManager = {
-    ...config,
-    custom: {
+  // Take asset manager from cache if it already exists
+  if (!grapes._cache.assetManager) {
+
+    // Create variable to hold information on asset manager status
+    // and available assets.
+    const am = grapes._cache.assetManager = reactive({
+      show: false,
+      assets: [],
+      types: [],
+      options: {},
+      close() { },
+      select() { },
+      remove() { },
+    })
+
+    // Use custom asset manager
+    if (!grapes.config.assetManager) grapes.config.assetManager = {}
+    grapes.config.assetManager.custom = {
       // Update reference to asset manager and set show to true when it is opened
       open(props) {
         am.assets = props.assets
@@ -31,8 +36,8 @@ export default function (grapes, config = {}) {
       close() {
         am.show = false
       }
-    },
+    }
   }
 
-  return readonly(am)
+  return readonly(grapes._cache.assetManager)
 }
