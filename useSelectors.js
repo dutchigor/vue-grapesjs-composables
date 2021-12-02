@@ -6,6 +6,8 @@ export default function (grapes, config = {}) {
   grapes.config.selectorManager = { ...config, custom: true }
 
   const state = {
+    options: [],
+    selected: '',
     // Change the selected selector in GrapesJs
     select(val) {
       grapes.editor.Selectors.setState(val)
