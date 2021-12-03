@@ -21,21 +21,27 @@ export default function (grapes) {
       }, [])
     }
 
-    const tree = grapes._cache.compTree = reactive([])
+    const components = grapes._cache.compTree = reactive({
+      tree: [],
+      select() { },
+      selectAdd() { },
+      selectRemove() { },
+      selectToggle() { }
+    })
 
     // After GrapesJs is loaded.
     grapes.onInit((editor) => {
       // Provide function to select a component from the tree
-      tree.select = editor.select
-      tree.selectAdd = editor.selectAdd
-      tree.selectRemove = editor.selectRemove
-      tree.selectToggle = editor.selectToggle
+      components.select = editor.select
+      components.selectAdd = editor.selectAdd
+      components.selectRemove = editor.selectRemove
+      components.selectToggle = editor.selectToggle
 
       // Update the reactive tree based on the tree in GrapesJs
       function updateTree() {
-        tree.length = 0
+        components.tree.length = 0
         const flatComps = flattenComponents(editor.getComponents().models)
-        tree.push(...flatComps)
+        components.tree.push(...flatComps)
       }
 
       updateTree()
