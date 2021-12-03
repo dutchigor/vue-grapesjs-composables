@@ -1,7 +1,7 @@
 import { reactive, readonly } from "vue"
 
 export default function (grapes) {
-  // Ensure GrapesJs is not yet initalised
+  // Ensure GrapesJs is not yet initialised
   if (grapes.initialized) throw new Error('useAssetManager must be executed before GrapesJs is initialised (onMount where useGrapes is executed)')
 
   // Take asset manager from cache if it already exists
