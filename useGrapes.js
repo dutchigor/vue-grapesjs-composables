@@ -41,7 +41,7 @@ export default function (config) {
   })
 
   // Tidy up
-  onBeforeUnmount(() => grapes.editor.destroy())
+  onBeforeUnmount(() => editor.destroy())
 
   return grapes
 }

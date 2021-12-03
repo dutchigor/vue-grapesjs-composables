@@ -28,5 +28,5 @@ export default function (grapes) {
     }))
   }
 
-  return readonly(grapes._cache.assetManager)
+  return readonly(grapes._cache.modal)
 }
