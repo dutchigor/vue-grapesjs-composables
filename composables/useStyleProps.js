@@ -26,15 +26,16 @@ export default function (grapes, sector) {
       // Function to update all style properties to the currently active CSS rule.
       function updateStyles() {
         for (const style in styles) {
-          styles[style].updateStyle()
+          styles[style]._updateStyle()
         }
       }
 
-      // Populate styles with all relevant style properties.
+
+      // Populate styvles with all relevant style properties.
       const models = editor.StyleManager.getProperties(sector).models
       for (const mdl of models) {
         styles[mdl.id] = new StyleProp(mdl)
-        styles[mdl.id].updateStyle()
+        styles[mdl.id]._updateStyle()
       }
 
       // Track selection of or updates to CSS rules.
@@ -42,7 +43,7 @@ export default function (grapes, sector) {
     })
   }
 
-  return styles
+  return grapes._cache.styleManager[sector]
 }
 
 // Manage style property lifecycle using the style model from GrapesJs.
@@ -51,13 +52,12 @@ class StyleProp {
     this.model = model
   }
   // Make attributes and changed values reactive.
-  updateStyle() {
+  _updateStyle() {
     this.attributes = { ...this.model.attributes }
-    this.changed = { ...this.model.changed }
   }
   // Update the style property in GrapesJs.
   setValue(val) {
     this.model.setValue(val)
-    this.updateStyle()
+    this._updateStyle()
   }
 }
