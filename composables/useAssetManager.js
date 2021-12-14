@@ -16,6 +16,7 @@ export default function (grapes) {
       options: {},
       close() { },
       select() { },
+      add() { },
       remove() { },
     })
 
@@ -29,6 +30,7 @@ export default function (grapes) {
         am.options = props.options
         am.close = props.close
         am.select = props.select
+        am.add = props.am.add
         am.remove = props.remove
         am.show = true
       },
