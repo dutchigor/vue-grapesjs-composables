@@ -11,15 +11,15 @@ export default function (grapes) {
     if (!grapes.config.selectorManager) grapes.config.selectorManager = {}
     grapes.config.selectorManager.custom = true
 
-    const state = {
-      options: [],
-      selected: '',
-    }
-
-    const classes = []
-
     // Create variable to hold all up to date selector properties.
-    const sm = grapes._cache.selectorManager = reactive({ state, classes, activeSelector: '' })
+    const sm = grapes._cache.selectorManager = reactive({
+      state: {
+        options: [],
+        selected: '',
+      },
+      classes: [],
+      activeSelector: '',
+    })
 
     // After GrapesJs is loaded.
     grapes.onInit((editor) => {
