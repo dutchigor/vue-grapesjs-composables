@@ -21,7 +21,6 @@ export default function (grapes) {
       function updateSelected(device) {
         dm.selected = {
           ...device.attributes,
-          model: device,
         }
       }
 
@@ -31,7 +30,6 @@ export default function (grapes) {
       function updateDevices() {
         dm.devices = editor.Devices.getDevices().map(device => ({
           ...device.attributes,
-          model: device,
         }))
       }
 
