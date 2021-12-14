@@ -1,6 +1,6 @@
 import { reactive, readonly } from "vue"
 
-export default function (grapes, content) {
+export default function (grapes) {
   // Ensure GrapesJs is not yet initialised
   if (grapes.initialized) throw new Error('useModalmust be executed before GrapesJs is initialised (onMount where useGrapes is executed)')
 
@@ -19,7 +19,7 @@ export default function (grapes, content) {
     // Create variable to hold up to date information on the editor content
     const storage = grapes._cache.content = reactive({
       //  - the current content
-      content,
+      content: {},
       load() { }
     })
 
@@ -50,12 +50,24 @@ export default function (grapes, content) {
          * @param  {Function} clbErr Callback function to call in case of errors
          */
         store(data, clb, clbErr) {
-          storage.content = data
+          for (let key in data) {
+            switch (key) {
+              case 'components':
+              case 'styles':
+              case 'assets':
+                storage.content[key] = JSON.parse(data[key])
+                break
+
+              default:
+                storage.content[key] = data[key]
+                break
+            }
+          }
           clb();
         }
       })
 
-      editor.load()
+      editor.store()
 
       //  - A function to load new content and triggers GrapesJs load
       storage.load = function (newContent) {
