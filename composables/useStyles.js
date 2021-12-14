@@ -37,7 +37,7 @@ export default function (grapes) {
 
       // Remove all rules from GrapesJs
       cssRules.clear = function () {
-        this.cssMgr.clear()
+        editor.Css.clear()
       }
 
       // Update the reactive state based on the active selector in GrapesJs
