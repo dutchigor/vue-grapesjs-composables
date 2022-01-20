@@ -1,6 +1,20 @@
 import gjs from 'grapesjs'
 import { onMounted, onBeforeUnmount, reactive, nextTick } from 'vue'
 
+/**
+ * Reactive base state and functions to manage Vue GrapesJS Composables.
+ * @typedef {Object} VGCconfig
+ * @property {Object} config Reactive version of the provided GrapesJS configuration object
+ * @property {boolean} initialized Whether GrapesJS has been initialized
+ * @method onBeforeInit
+ * @method onInit
+ */
+
+/**
+ * Initialize GrapesJS and make it available to the other composables
+ * @param {Object} config Configuration options as defined by [GrapesJS]{https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js}
+ * @returns {VGCconfig}
+ */
 export default function (config) {
   const beforeInit = []
   const afterInit = []
@@ -9,19 +23,26 @@ export default function (config) {
   const grapes = {
     // Cache to store reactive objects for composables
     _cache: {},
-    // GrapesJs initialization Configuration.
-    // This is made reactive to make use of template refs to append to.
+    // make the configuration reactive to make use of template refs to append to.
     // Some default values provided to be more inline with integrating in to Vue.
     config: reactive({
       panels: { defaults: [] },
       height: '100%',
       ...config,
     }),
-    // Will contain the editor after initialization.
+
     initialized: false,
-    // Lifecycle function to be executed after DOM is loaded but before GrapesJs is initialized.
+
+    /**
+     * Register function to be executed right before GrapesJS is initialized
+     * @param {Function} fn Function to register
+     */
     onBeforeInit(fn) { beforeInit.push(fn) },
-    // Lifecycle function to be executed right after GrapesJs is loaded.
+
+    /**
+     * Register function to be executed right after GrapesJS is initialized
+     * @param {Function} fn Function to register
+     */
     onInit(fn) {
       if (this.initialized) fn(editor)
       afterInit.push(fn)
