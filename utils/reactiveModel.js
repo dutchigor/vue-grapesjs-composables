@@ -1,6 +1,6 @@
 import { computed, reactive, shallowRef, triggerRef } from "vue"
 
-export default function reactiveModel(model) {
+export default function reactiveModel(model, overwrites = {}) {
   // Create reactive object to reflect a backbone model
   const modelRef = shallowRef(model)
 
@@ -18,13 +18,16 @@ export default function reactiveModel(model) {
 
   // Attach getter/setters for the model attributes.
   Object.keys(model.attributes).forEach(attr => {
-    const compAttr = computed({
-      get: () => modelRef.value.get(attr),
-      set: val => modelRef.value.set(attr, val)
-    })
-
-    proxy[attr] = compAttr
+    if (typeof overwrites[attr] !== 'function') {
+      proxy[attr] = computed({
+        get: () => modelRef.value.get(attr),
+        set: val => modelRef.value.set(attr, val)
+      })
+    }
   })
+
+  // Add attribute overwrites
+  Object.keys(overwrites).forEach(attr => proxy[attr] = overwrites[attr](modelRef))
 
   if (!proxy.id) {
     // sometimes ID is a field in the model (in which case it'll be proxied already)

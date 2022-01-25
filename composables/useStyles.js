@@ -1,62 +1,58 @@
 import { reactive } from "vue"
+import reactiveCollection from "../utils/reactiveCollection"
+import reactiveModel from "../utils/reactiveModel"
 
-export default function (grapes) {
+export default function useStyles(grapes) {
   // Take block manager from cache if it already exists
   if (!grapes._cache.styles) {
-
-    const cssRules = []
-
-    const selected = {
-      rule: {},
-      styles: {},
-      selector: '',
-      updateStyle(style, value) {
-        this.styles[style] = value
-        this.rule.setStyle(this.styles)
-      }
-    }
-
-    // Create variable to hold all up to date selector properties.
-    const sm = grapes._cache.styles = reactive({ cssRules, selected })
+    // Create manager to hold all up to date selector properties.
+    const sm = grapes._cache.styles = reactive({
+      cssRules: [],
+      selected: { style: new Proxy({}, { get: () => null }) }
+    })
 
     // After GrapesJs is loaded.
     grapes.onInit((editor) => {
-      // Add new rule to GrapesJs
-      cssRules.add = function (rule) {
-        if (typeof rule === 'object') {
-          editor.Css.setRule(rule.selectors, rule.style, rule.opts)
-        } else {
-          editor.Css.addRules(rule)
+      // Map GrapesJS CSS Composer functions to manager
+      Object.keys(editor.Css).forEach(attr => {
+        if (typeof editor.Css[attr] === "function" && attr !== "constructor") {
+          sm[attr] = editor.Css[attr].bind(editor.Css)
+        }
+      })
+
+      // Load CSS rules with all rules in GrapesJS
+      sm.cssRules = reactiveCollection(editor.Css.getRules())
+
+      // Manage Rule styles using dedicated GrapesJS functions
+      function proxyStyle(modelRef) {
+        return new Proxy(modelRef, {
+          // Get a style from Rule model
+          get: (model, style) => model.value.getStyle(style),
+          // Add new style to styles object and set new styles on Rule
+          set: (model, style, val) => {
+            const styles = model.value.getStyle()
+            model.value.setStyle({ ...styles, [style]: val })
+            return styles
+          }
+        })
+      }
+
+      // Update selected style in manager
+      function updateSelected() {
+        const selected = editor.getSelectedToStyle()
+        if (selected !== sm.selected._modelRef) {
+          if (sm.selected._destroy) sm.selected._destroy()
+          sm.selected = reactiveModel(selected, { style: proxyStyle })
         }
       }
 
-      // Remove rule from GrapesJs
-      cssRules.remove = function (rule) {
-        editor.Css.remove(rule)
-      }
+      // Make sure selected style is updated on 1st load and relevant changes in GrapesJS
+      updateSelected()
 
-      // Remove all rules from GrapesJs
-      cssRules.clear = function () {
-        editor.Css.clear()
-      }
-
-      // Update the reactive state based on the active selector in GrapesJs
-      function updateSM() {
-        // Fetch the latest rules from GrapesJs
-        sm.cssRules.length = 0
-        sm.cssRules.push(...editor.Css.getRules())
-
-        // Fetch the selected rule from GrapesJs
-        sm.selected.rule = editor.getSelectedToStyle()
-        sm.selected.styles = sm.selected.rule ? sm.selected.rule.getStyle() : {}
-        sm.selected.selector = sm.selected.rule ? sm.selected.rule.getSelectorsString() : ''
-      }
-
-      // Fetch the latest selectors from GrapesJs
-      updateSM()
-
-      // Track the changes in GrapesJs for selector updates
-      editor.on('selector:custom', updateSM)
+      editor.on('component:selected', updateSelected)
+      editor.on('selector:add', updateSelected)
+      editor.on('selector:remove', updateSelected)
+      editor.on('device:select', updateSelected)
     })
   }
 
