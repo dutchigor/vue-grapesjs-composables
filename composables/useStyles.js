@@ -2,13 +2,29 @@ import { reactive } from "vue"
 import reactiveCollection from "../utils/reactiveCollection"
 import reactiveModel from "../utils/reactiveModel"
 
+/**
+ * The CSS Manager contains all the functions that GrapesJS provides in the
+ * [CSS Composer]{@link https://grapesjs.com/docs/api/css_composer.html},
+ * along with reactive representations of the CSS Rules.
+ * @typedef {Object} CssManager
+ * @property {Object[]} cssRules A reactive list of all the
+ * [CSS rules]{@link https://grapesjs.com/docs/api/css_rule.html#cssrule} as defined in GrapesJS
+ * @property {Object} selected A reactive representation of the selected
+ * [CSS rule]{@link https://grapesjs.com/docs/api/css_rule.html#cssrule}
+ */
+
+/**
+ * Fetch and, if necessary, initiate the CSS manager.
+ * @param {VGCconfig} grapes As provided by useGrapes
+ * @returns {CssManager}
+ */
 export default function useStyles(grapes) {
   // Take block manager from cache if it already exists
   if (!grapes._cache.styles) {
     // Create manager to hold all up to date selector properties.
-    const sm = grapes._cache.styles = reactive({
+    const cm = grapes._cache.styles = reactive({
       cssRules: [],
-      selected: { style: new Proxy({}, { get: () => null }) }
+      selected: {}
     })
 
     // After GrapesJs is loaded.
@@ -16,12 +32,12 @@ export default function useStyles(grapes) {
       // Map GrapesJS CSS Composer functions to manager
       Object.keys(editor.Css).forEach(attr => {
         if (typeof editor.Css[attr] === "function" && attr !== "constructor") {
-          sm[attr] = editor.Css[attr].bind(editor.Css)
+          cm[attr] = editor.Css[attr].bind(editor.Css)
         }
       })
 
       // Load CSS rules with all rules in GrapesJS
-      sm.cssRules = reactiveCollection(editor.Css.getRules())
+      cm.cssRules = reactiveCollection(editor.Css.getRules())
 
       // Manage Rule styles using dedicated GrapesJS functions
       function proxyStyle(modelRef) {
@@ -40,9 +56,9 @@ export default function useStyles(grapes) {
       // Update selected style in manager
       function updateSelected() {
         const selected = editor.getSelectedToStyle()
-        if (selected !== sm.selected._modelRef) {
-          if (sm.selected._destroy) sm.selected._destroy()
-          sm.selected = reactiveModel(selected, { style: proxyStyle })
+        if (selected !== cm.selected._modelRef) {
+          if (cm.selected._destroy) cm.selected._destroy()
+          cm.selected = reactiveModel(selected, { style: proxyStyle })
         }
       }
 
@@ -52,6 +68,7 @@ export default function useStyles(grapes) {
       editor.on('component:selected', updateSelected)
       editor.on('selector:add', updateSelected)
       editor.on('selector:remove', updateSelected)
+      editor.on('selector:state', updateSelected)
       editor.on('device:select', updateSelected)
     })
   }

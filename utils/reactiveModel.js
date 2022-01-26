@@ -38,16 +38,14 @@ export default function reactiveModel(model, overwrites = {}) {
     })
   }
 
-  const triggerModel = () => {
-    triggerRef(modelRef)
-  }
+  const triggerModel = triggerRef.bind(triggerRef, modelRef)
 
   // Ensure proxy reactivity is triggered when model is updated
   // model.on('change', triggerRef.bind(triggerRef, proxy._modelRef))
   model.on('change', triggerModel)
 
-  // proxy._destroy = () => model.off('change', triggerModel)
-  proxy._destroy = () => model.off('change', triggerRef)
+  // proxy._destroy = () => model.off('change', triggerRef)
+  proxy._destroy = () => model.off('change', triggerModel)
 
   return proxy
 }
