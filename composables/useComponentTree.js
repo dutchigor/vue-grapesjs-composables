@@ -1,28 +1,59 @@
 import { reactive } from 'vue'
+import reactiveModel from '../utils/reactiveModel'
+import reactiveCollection from '../utils/reactiveCollection'
 
-export default function (grapes) {
+// Backbone collection events that trigger component updates
+const events = [
+  'change:attributes',
+  'change:tagName',
+  'change:styles',
+  'change:traits',
+  'change:name'
+]
+
+// get reactive list of child components from a component
+function getCompTree(compRef) {
+  const options = {
+    modelOpts: {
+      overwrites: { components: getCompTree },
+      events,
+      onDecouple: cmp => cmp.components._decouple()
+    },
+    alter: {
+      method: 'filter',
+      callback: cmp => cmp.get('type') !== 'textnode'
+    }
+  }
+
+  return reactiveCollection(compRef.value.get('components'), options)
+}
+
+// Get manager object containing:
+// - The wrapper component with reactive child components
+// - Functions to manage the selection of 
+
+/**
+ * Object to manage the component tree.
+ * @typedef ComponentTree
+ * @property {Object} wrapper A reactive representation of the component tree, with 
+ * [GrapesJS components]{@link https://grapesjs.com/docs/api/component.html#component}
+ * @property {Function} select [Select a component]{@link https://grapesjs.com/docs/api/editor.html#select}
+ * @property {Function} selectAdd [Add component to selection]{@link https://grapesjs.com/docs/api/editor.html#selectadd}
+ * @property {Function} selectRemove [Remove component from selection]{@link https://grapesjs.com/docs/api/editor.html#selectremove}
+ * @property {Function} selectToggle [Toggle component selection]{@link https://grapesjs.com/docs/api/editor.html#selecttoggle}
+ */
+
+/**
+ * Get object to manage the component tree.
+ * @param {VGCconfig} grapes As provided by useGrapes
+ * @returns {ComponentTree}
+ */
+export default function useComponentTree(grapes) {
   // Take component tree from cache if it already exists
   if (!grapes._cache.compTree) {
 
-    // Create a simplified component tree that is easier to model.
-    const flattenComponents = (comps) => {
-      return comps.reduce((compList, comp) => {
-        // We're only interested in the component's props
-        const props = comp.props()
-        // Text nodes should not be managed independently of their parents
-        if (props.type !== 'textnode') {
-          const flatProps = { ...props }
-          // Recursively flatten all child components
-          flatProps.components = flattenComponents(comp.components().models)
-          flatProps.component = comp
-          compList.push(flatProps)
-        }
-        return compList
-      }, [])
-    }
-
     const components = grapes._cache.compTree = reactive({
-      tree: [],
+      wrapper: {},
       select() { },
       selectAdd() { },
       selectRemove() { },
@@ -31,25 +62,16 @@ export default function (grapes) {
 
     // After GrapesJs is loaded.
     grapes.onInit((editor) => {
-      // Provide function to select a component from the tree
+      // Set selection functions
       components.select = editor.select
       components.selectAdd = editor.selectAdd
       components.selectRemove = editor.selectRemove
       components.selectToggle = editor.selectToggle
 
-      // Update the reactive tree based on the tree in GrapesJs
-      function updateTree() {
-        components.tree.length = 0
-        const flatComps = flattenComponents(editor.getComponents().models)
-        components.tree.push(...flatComps)
-      }
-
-      updateTree()
-
-      // Track the changes in GrapesJs for component tree updates
-      editor.on('component:mount', updateTree)
-      editor.on('component:remove', updateTree)
-      editor.on('component:selected', updateTree)
+      // Set top level component
+      components.wrapper = reactiveModel(editor.getWrapper(), {
+        overwrites: { components: getCompTree }, events,
+      })
     })
   }
 

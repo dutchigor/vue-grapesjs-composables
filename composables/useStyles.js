@@ -57,8 +57,8 @@ export default function useStyles(grapes) {
       function updateSelected() {
         const selected = editor.getSelectedToStyle()
         if (selected !== cm.selected._modelRef) {
-          if (cm.selected._destroy) cm.selected._destroy()
-          cm.selected = reactiveModel(selected, { style: proxyStyle })
+          if (cm.selected._decouple) cm.selected._decouple()
+          cm.selected = reactiveModel(selected, { overwrites: { style: proxyStyle } })
         }
       }
 

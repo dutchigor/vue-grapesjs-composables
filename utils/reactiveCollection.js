@@ -1,5 +1,5 @@
-import { reactive, toRaw } from "vue";
-import proxyModel from "./reactiveModel";
+import { reactive, toRaw, isReactive } from "vue";
+import reactiveModel from "./reactiveModel";
 
 // List of array functions that should not be overwritten
 const arrayPriority = [
@@ -46,23 +46,23 @@ const returnsModels = [
 ]
 
 // Get proxied model from previous collection if it exists, otherwise create it
-function getCachedProxy(collection, model) {
-  return collection.find(cache => cache.cid === model.cid)
-    ?? proxyModel(model)
+function getCachedProxy(collection, options, model) {
+  return collection.find(cache => cache._modelRef.cid === model.cid)
+    ?? reactiveModel(model, options.modelOpts ?? {})
 }
 
 // If input function returns a model or array of models, return a proxy mapped to the model instead
-function mapReturnModels(fn, key, cache) {
+function mapReturnModels(fn, key, cache, options) {
   if (returnsModels.indexOf(key) === -1) return fn
   return function () {
     const res = fn.apply(this, arguments)
-    if (Array.isArray(res)) return res.map(getCachedProxy.bind(null, cache))
-    return getCachedProxy(cache, res)
+    if (Array.isArray(res)) return res.map(getCachedProxy.bind(null, cache, options))
+    return getCachedProxy(cache, options, res)
   }
 }
 
 // Provide an array with all functions of the input collection assigned to it
-function bindCollectionFunctions(collection) {
+function bindCollectionFunctions(collection, options) {
   const res = []
   for (const key in collection) {
     // Make sure that property is a function
@@ -73,7 +73,7 @@ function bindCollectionFunctions(collection) {
     ) {
       // Bind function to original collection and assign to output array
       const func = collection[key].bind(collection)
-      const bndFunc = mapReturnModels(func, key, res)
+      const bndFunc = mapReturnModels(func, key, res, options)
       Object.defineProperty(res, key, { value: bndFunc })
     }
   }
@@ -82,50 +82,64 @@ function bindCollectionFunctions(collection) {
 }
 
 // Update list of proxied models with models in collection
-function updateCollection(proxy, collection) {
+function updateCollection(proxy, options, model, collection) {
   const cache = [...proxy]
 
   // Create updated list of proxied models
   proxy.length = 0
   for (const model of collection.models) {
-    proxy.push(getCachedProxy(cache, model))
+    proxy.push(getCachedProxy(cache, options, model))
   }
 
   // Clean up any proxied models removed from the collection.
   // Includes is not available on a reactive object so the raw array is needed
   const rawProxy = toRaw(proxy)
   for (const model of cache) {
-    if (rawProxy.includes(model)) model._destroy()
+    if (rawProxy.includes(model)) model._decouple()
   }
 }
 
 /**
  * Create a reactive object that reflects a backbone collection,
  * containing a reactive proxy to each model in the collection.
-* @param {Array} collection The collection to make reactive
- * @returns A reactive reflection of the input collection
+ * @param {Array} collection The collection to make reactive
+ * @returns {Array} A reactive reflection of the input collection
  */
-export default function reactiveCollection(collection) {
-  if (typeof collection !== 'object' || !(Array.isArray(collection) || collection.modelId)) {
-    throw 'proxyCollection can only be set to a valid Backbone collection or array of models'
+export default function reactiveCollection(collection, options = {}) {
+  // If model is already reactive, simply return it
+  if (isReactive(collection)) return collection
+
+  if (typeof collection !== 'object' || !(Array.isArray(collection) || typeof collection.modelId === 'function')) {
+    throw new Error('proxyCollection can only be set to a valid Backbone collection or array of models')
   }
 
   // Create a reactive array with all functions of the input collection assigned to it
   const proxy = reactive(
-    (collection.modelId) ? bindCollectionFunctions(collection) : []
+    (collection.modelId) ? bindCollectionFunctions(collection, options) : []
   )
 
-  // Add a proxy to each model in the collection to the reactive array
-  for (const model of collection.models ?? collection) {
-    proxy.push(proxyModel(model))
+  // Change list of models as defined in the options
+  const models = collection.models ?? collection
+  const alteredModels = options.alter ?
+    models[options.alter.method](options.alter.callback) :
+    models
+
+  // Add a proxy to each model in the altered collection to the reactive array
+  for (const model of alteredModels) {
+    proxy.push(reactiveModel(model, options.modelOpts ?? {}))
   }
 
   // Ensure reactive array is updated when collection is updated
-  if (collection.on) collection.on('update', updateCollection.bind(collection, proxy))
+  const updColl = updateCollection.bind(collection, proxy, options)
+
+  if (collection.on) {
+    collection.on('add', updColl)
+    collection.on('remove', updColl)
+  }
 
   // Add a function to the reactive array to clean up event handler
   // To be executed before deleting the array
-  if (collection.off) proxy._destroy = () => collection.off('update', updateCollection)
+  if (collection.off) proxy._decouple = () => collection.off('update', updColl)
 
   return proxy
 }

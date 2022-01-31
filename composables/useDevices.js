@@ -31,7 +31,7 @@ export default function (grapes) {
 
       // Update the reactive state based on the device selected in GrapesJs
       function updateSelected(device) {
-        if (dm.selected._destroy) dm.selected._destroy()
+        if (dm.selected._decouple) dm.selected._decouple()
         dm.selected = reactiveModel(device)
       }
 
