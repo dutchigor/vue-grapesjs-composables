@@ -1,36 +1,6 @@
 import { reactive } from 'vue'
+import { getChildren, cmpEvents } from '../utils/componentHelpers'
 import reactiveModel from '../utils/reactiveModel'
-import reactiveCollection from '../utils/reactiveCollection'
-
-// Backbone collection events that trigger component updates
-const events = [
-  'change:attributes',
-  'change:tagName',
-  'change:styles',
-  'change:traits',
-  'change:name'
-]
-
-// get reactive list of child components from a component
-function getCompTree(compRef) {
-  const options = {
-    modelOpts: {
-      overwrites: { components: getCompTree },
-      events,
-      onDecouple: cmp => cmp.components._decouple()
-    },
-    alter: {
-      method: 'filter',
-      callback: cmp => cmp.get('type') !== 'textnode'
-    }
-  }
-
-  return reactiveCollection(compRef.value.get('components'), options)
-}
-
-// Get manager object containing:
-// - The wrapper component with reactive child components
-// - Functions to manage the selection of 
 
 /**
  * Object to manage the component tree.
@@ -70,7 +40,10 @@ export default function useComponentTree(grapes) {
 
       // Set top level component
       components.wrapper = reactiveModel(editor.getWrapper(), {
-        overwrites: { components: getCompTree }, events,
+        overwrites: {
+          components: getChildren,
+        },
+        events: cmpEvents,
       })
     })
   }

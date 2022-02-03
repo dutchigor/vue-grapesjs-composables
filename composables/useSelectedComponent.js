@@ -1,35 +1,48 @@
 import { reactive } from "vue"
+import { getAttributes, getClasses, getChildren, cmpEvents } from '../utils/componentHelpers'
+import reactiveModel from '../utils/reactiveModel'
 
-export default function (grapes) {
+/**
+ * Object to manage the component tree.
+ * @typedef Component
+ * @property {Object} wrapper A reactive representation of the
+ * [selected component]{@link https://grapesjs.com/docs/api/component.html#component},
+ * Where the child components, attributes and classes have also been made reactive.
+ */
+
+/**
+ * Get object to manage the selected component.
+ * @param {VGCconfig} grapes As provided by useGrapes
+ * @returns {Component}
+ */
+export default function useSelectedComponent(grapes) {
   // Take selected component from cache if it already exists
   if (!grapes._cache.selectedComp) {
 
-    // Create variable to hold information on currently selected component.
+    // Create variable to hold information on currently selected component
     const selected = grapes._cache.selectedComp = reactive({
-      component: {},
-      style: {},
-      attributes: {},
-      setAttributes(attr) { this.component.setAttributes(attr) },
+      component: {}
     })
 
-    // Track the selected component
+    // When GrapesJS is set up
     grapes.onInit((editor) => {
-      // Update the reactive set of attribute
-      function updateAttr(comp) {
-        selected.attributes = comp.getAttributes()
-      }
-
-      // Update the reference to the selected component and its values.
+      // Update the reference to the selected component and its values
       function updateComp(comp) {
-        selected.component = comp
-        selected.style = comp.getStyle()
-        updateAttr(comp)
+        selected.component = reactiveModel(comp, {
+          overwrites: {
+            components: getChildren,
+            attributes: getAttributes,
+            classes: getClasses,
+          },
+          events: cmpEvents,
+        })
       }
 
+      // Perform the above update whenever a component is selected
       editor.on('component:selected', updateComp)
-      editor.on('component:update:attributes', updateAttr)
     })
   }
+
 
   return grapes._cache.selectedComp
 }

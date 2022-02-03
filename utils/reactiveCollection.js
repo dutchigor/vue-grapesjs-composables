@@ -47,7 +47,7 @@ const returnsModels = [
 
 // Get proxied model from previous collection if it exists, otherwise create it
 function getCachedProxy(collection, options, model) {
-  return collection.find(cache => cache._modelRef.cid === model.cid)
+  return collection.find(cache => cache._model.cid === model.cid)
     ?? reactiveModel(model, options.modelOpts ?? {})
 }
 
@@ -82,7 +82,7 @@ function bindCollectionFunctions(collection, options) {
 }
 
 // Update list of proxied models with models in collection
-function updateCollection(proxy, options, model, collection) {
+function updateCollection(proxy, options, collection) {
   const cache = [...proxy]
 
   // Create updated list of proxied models
@@ -95,7 +95,7 @@ function updateCollection(proxy, options, model, collection) {
   // Includes is not available on a reactive object so the raw array is needed
   const rawProxy = toRaw(proxy)
   for (const model of cache) {
-    if (rawProxy.includes(model)) model._decouple()
+    if (!rawProxy.includes(model)) model._decouple()
   }
 }
 
@@ -108,10 +108,6 @@ function updateCollection(proxy, options, model, collection) {
 export default function reactiveCollection(collection, options = {}) {
   // If model is already reactive, simply return it
   if (isReactive(collection)) return collection
-
-  if (typeof collection !== 'object' || !(Array.isArray(collection) || typeof collection.modelId === 'function')) {
-    throw new Error('proxyCollection can only be set to a valid Backbone collection or array of models')
-  }
 
   // Create a reactive array with all functions of the input collection assigned to it
   const proxy = reactive(
@@ -126,20 +122,32 @@ export default function reactiveCollection(collection, options = {}) {
 
   // Add a proxy to each model in the altered collection to the reactive array
   for (const model of alteredModels) {
-    proxy.push(reactiveModel(model, options.modelOpts ?? {}))
+    proxy.push(
+      reactiveModel(model, options.modelOpts ?? {})
+    )
   }
 
   // Ensure reactive array is updated when collection is updated
   const updColl = updateCollection.bind(collection, proxy, options)
+  // function updColl(components) {
+  //   console.log(arguments)
+  //   updateCollection(proxy, options, components)
+  // }
 
   if (collection.on) {
-    collection.on('add', updColl)
-    collection.on('remove', updColl)
+    collection.on('update', updColl)
   }
+
 
   // Add a function to the reactive array to clean up event handler
   // To be executed before deleting the array
-  if (collection.off) proxy._decouple = () => collection.off('update', updColl)
+  function decouple() {
+    collection.off('update', updColl)
+  }
+
+  if (collection.off) {
+    Object.defineProperty(proxy, '_decouple', { value: decouple })
+  }
 
   return proxy
 }
