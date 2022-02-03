@@ -128,11 +128,11 @@ export default function reactiveCollection(collection, options = {}) {
   }
 
   // Ensure reactive array is updated when collection is updated
-  const updColl = updateCollection.bind(collection, proxy, options)
-  // function updColl(components) {
-  //   console.log(arguments)
-  //   updateCollection(proxy, options, components)
-  // }
+  // const updColl = updateCollection.bind(collection, proxy, options)
+  function updColl(components) {
+    console.log(arguments)
+    updateCollection(proxy, options, components)
+  }
 
   if (collection.on) {
     collection.on('update', updColl)
@@ -141,11 +141,8 @@ export default function reactiveCollection(collection, options = {}) {
 
   // Add a function to the reactive array to clean up event handler
   // To be executed before deleting the array
-  function decouple() {
-    collection.off('update', updColl)
-  }
-
   if (collection.off) {
+    const decouple = collection.off.bind(collection.off, 'update', updColl)
     Object.defineProperty(proxy, '_decouple', { value: decouple })
   }
 
