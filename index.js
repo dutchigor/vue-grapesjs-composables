@@ -1,6 +1,6 @@
 export { default as useGrapes } from './composables/useGrapes'
 export { default as useStyleProps } from './composables/useStyleProps'
-export { default as useSelectors } from './composables/useSelectors'
+export { default as useState } from './composables/useState'
 export { default as useComponentTree } from './composables/useComponentTree'
 export { default as useSelectedComponent } from './composables/useSelectedComponent'
 export { default as useStyles } from './composables/useStyles'
