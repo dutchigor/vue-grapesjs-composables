@@ -72,12 +72,12 @@ export default function reactiveModel(model, options = {}) {
     })
   }
 
-  // const triggerModel = triggerRef.bind(triggerRef, modelRef)
+  const triggerModel = triggerRef.bind(triggerRef, modelRef)
 
-  function triggerModel() {
-    console.log({ updated: modelRef })
-    triggerRef(modelRef)
-  }
+  // function triggerModel() {
+  //   console.log({ updated: modelRef })
+  //   triggerRef(modelRef)
+  // }
 
   // Ensure proxy reactivity is triggered when model is updated
   options.events.forEach(evt => model.on(evt, triggerModel))

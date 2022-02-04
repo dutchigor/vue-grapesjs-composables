@@ -128,11 +128,11 @@ export default function reactiveCollection(collection, options = {}) {
   }
 
   // Ensure reactive array is updated when collection is updated
-  // const updColl = updateCollection.bind(collection, proxy, options)
-  function updColl(components) {
-    console.log(arguments)
-    updateCollection(proxy, options, components)
-  }
+  const updColl = updateCollection.bind(collection, proxy, options)
+  // function updColl(components) {
+  //   console.log(arguments)
+  //   updateCollection(proxy, options, components)
+  // }
 
   if (collection.on) {
     collection.on('update', updColl)
