@@ -1,5 +1,25 @@
 import { reactive } from "vue"
+import reactiveCollection from "../utils/reactiveCollection"
 
+/**
+ * The Block Manager provides a reactive representation of the blocks available in GrapesJS,
+ * along with functions needed to handle them.
+ * @typedef {Object} BlockManager
+ * @property {Object[]} blocks A reactive list of all
+ * [Blocks]{@link https://grapesjs.com/docs/api/block.html#block} as defined in GrapesJS.
+ * @property {String} renderedBlocks A reactive list of all rendered blocks as provided by
+ * [getAllVisible]{@link https://grapesjs.com/docs/api/block_manager.html#getallvisible}.
+ * @property {Function} dragStart A [callback]{@link https://grapesjs.com/docs/modules/Blocks.html#customization}
+ *  to trigger the start of block dragging in GrapesJS (called on e.g. the dragstart event on the rendered block).
+ * @property {Function} dragStop A [callback]{@link https://grapesjs.com/docs/modules/Blocks.html#customization}
+ *  to trigger the drop of a block in GrapesJS (called on e.g. the dragend event on the rendered block).
+ */
+
+/**
+ * Fetch and, if necessary, initiate the Block Manager.
+ * @param {VGCconfig} grapes As provided by useGrapes
+ * @returns {BlockManager}
+ */
 export default function (grapes) {
   // Ensure GrapesJs is not yet initialised
   if (grapes.initialized) throw new Error('useBlocks must be executed before GrapesJs is initialised (onMount where useGrapes is executed)')
@@ -14,26 +34,18 @@ export default function (grapes) {
     // Create variable to hold information on currently selected component.
     const bm = grapes._cache.blockManager = reactive({
       blocks: [],
+      renderedBlocks: [],
       dragStart() { },
       dragStop() { },
     })
 
-    // Function to update the block manager with all available blocks and dragging functionality.
-    function updateBM(props) {
-      bm.blocks = props.blocks;
-      bm.dragStart = props.dragStart;
-      bm.dragStop = props.dragStop;
-    }
-
     // After GrapesJs is loaded.
     grapes.onInit((editor) => {
       // Provide first load for the block manager
-      bm.blocks = editor.Blocks.getAll().models
-      bm.dragStart = (block) => editor.Blocks.startDrag(block)
-      bm.dragStop = () => editor.Blocks.endDrag()
-
-      // Listen to all changes to the block list
-      editor.on('block:custom', updateBM)
+      bm.blocks = reactiveCollection(editor.Blocks.getAll())
+      bm.renderedBlocks = reactiveCollection(editor.Blocks.getAllVisible())
+      bm.dragStart = editor.Blocks.startDrag.bind(editor.Blocks)
+      bm.dragStop = editor.Blocks.endDrag.bind(editor.Blocks)
     })
   }
 
