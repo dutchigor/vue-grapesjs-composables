@@ -8,9 +8,10 @@ import reactiveModel from "../utils/reactiveModel"
  * along with reactive representations of the CSS Rules.
  * @typedef {Object} CssManager
  * @property {Object[]} cssRules A reactive list of all the
- * [CSS rules]{@link https://grapesjs.com/docs/api/css_rule.html#cssrule} as defined in GrapesJS
- * @property {Object} selected A reactive representation of the selected
- * [CSS rule]{@link https://grapesjs.com/docs/api/css_rule.html#cssrule}
+ * [CSS rules]{@link https://grapesjs.com/docs/api/css_rule.html#cssrule} as defined in GrapesJS.
+ * @property {Object} selected.rule A reactive representation of the selected
+ * [CSS rule]{@link https://grapesjs.com/docs/api/css_rule.html#cssrule}.
+ * @property {String} selected.selector The css selector that identifies the selected rule.
  */
 
 /**
@@ -21,10 +22,17 @@ import reactiveModel from "../utils/reactiveModel"
 export default function useStyles(grapes) {
   // Take block manager from cache if it already exists
   if (!grapes._cache.styles) {
+    // Use custom selector manager
+    if (!grapes.config.selectorManager) grapes.config.selectorManager = {}
+    grapes.config.selectorManager.custom = true
+
     // Create manager to hold all up to date selector properties.
     const cm = grapes._cache.styles = reactive({
       cssRules: [],
-      selected: {}
+      selected: {
+        rule: {},
+        selector: '',
+      },
     })
 
     // After GrapesJs is loaded.
@@ -56,22 +64,23 @@ export default function useStyles(grapes) {
       // Update selected style in manager
       function updateSelected() {
         const selected = editor.getSelectedToStyle()
-        if (selected !== cm.selected._model) {
-          if (cm.selected._decouple) cm.selected._decouple()
-          cm.selected = selected ?
-            reactiveModel(selected, { overwrites: { style: proxyStyle } }) :
-            {}
+        if (selected !== cm.selected.rule._model) {
+          if (cm.selected.rule._decouple) cm.selected.rule._decouple()
+          if (selected) {
+            cm.selected.rule = reactiveModel(selected, { overwrites: { style: proxyStyle } })
+            cm.selected.selector = selected.selectorsToString()
+          } else {
+            cm.selected.rule = {}
+            cm.selected.selector = ''
+          }
+
         }
       }
 
       // Make sure selected style is updated on 1st load and relevant changes in GrapesJS
       updateSelected()
 
-      editor.on('component:selected', updateSelected)
-      editor.on('selector:add', updateSelected)
-      editor.on('selector:remove', updateSelected)
-      editor.on('selector:state', updateSelected)
-      editor.on('device:select', updateSelected)
+      editor.on('selector:custom', updateSelected)
     })
   }
 
