@@ -2,7 +2,7 @@ import { reactive } from "vue"
 import reactiveCollection from "../utils/reactiveCollection"
 
 /**
- * The State Manager provides a reactive representaion of the States available in GrapesJS.
+ * The State Manager provides a reactive representation of the states available in GrapesJS.
  * @typedef {Object} StateManager
  * @property {Object[]} all A reactive list of all the
  * [States]{@link https://grapesjs.com/docs/api/state.html#state} as defined in GrapesJS.
