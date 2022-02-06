@@ -1,4 +1,4 @@
-import { computed, isReactive, reactive, shallowRef, triggerRef } from "vue"
+import { computed, isReactive, shallowReactive, shallowRef, triggerRef } from "vue"
 
 function getMethods(model) {
   // const objChain = []
@@ -32,8 +32,8 @@ export default function reactiveModel(model, options = {}) {
   // Create reactive object to reflect a backbone model
   const modelRef = shallowRef(model)
 
-  const proxy = reactive({
-    _model: modelRef
+  const proxy = shallowReactive({
+    _model: model
   })
 
 
@@ -65,14 +65,15 @@ export default function reactiveModel(model, options = {}) {
 
   if (!proxy.cid) {
     // sometimes ID is a field in the model (in which case it'll be proxied already)
-    Object.defineProperty(proxy, "cid", {
-      get: function () {
-        return model.cid;
-      }
-    })
+    proxy.cid = model.cid
+    // Object.defineProperty(proxy, "cid", {
+    //   get: function () {
+    //     return model.cid;
+    //   }
+    // })
   }
 
-  const triggerModel = triggerRef.bind(triggerRef, modelRef)
+  proxy._triggerModel = triggerRef.bind(triggerRef, modelRef)
 
   // function triggerModel() {
   //   console.log({ updated: modelRef })
@@ -80,13 +81,13 @@ export default function reactiveModel(model, options = {}) {
   // }
 
   // Ensure proxy reactivity is triggered when model is updated
-  options.events.forEach(evt => model.on(evt, triggerModel))
+  options.events.forEach(evt => model.on(evt, proxy._triggerModel))
 
 
   // Add method to proxy to remove triggers from model
   function decouple() {
     if (options.onDecouple) options.onDecouple(proxy)
-    options.events.forEach(evt => model.off(evt, triggerModel))
+    options.events.forEach(evt => model.off(evt, proxy._triggerModel))
   }
 
   Object.defineProperty(proxy, '_decouple', { value: decouple })

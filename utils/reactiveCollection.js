@@ -47,7 +47,7 @@ const returnsModels = [
 
 // Get proxied model from previous collection if it exists, otherwise create it
 function getCachedProxy(collection, options, model) {
-  return collection.find(cache => cache._model.cid === model.cid)
+  return collection.find(cache => cache.cid === model.cid)
     ?? reactiveModel(model, options.modelOpts ?? {})
 }
 
