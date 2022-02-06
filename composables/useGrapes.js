@@ -23,7 +23,8 @@ export default function (config) {
   const grapes = {
     // Cache to store reactive objects for composables
     _cache: {},
-    // make the configuration reactive to make use of template refs to append to.
+
+    // Make the configuration reactive to make use of template refs to append to.
     // Some default values provided to be more inline with integrating in to Vue.
     config: reactive({
       panels: { defaults: [] },

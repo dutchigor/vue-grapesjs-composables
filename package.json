@@ -19,6 +19,6 @@
     "vue": "^3.0.0"
   },
   "dependencies": {
-    "grapesjs": "^0.17.29"
+    "grapesjs": "^0.18.2"
   }
 }
