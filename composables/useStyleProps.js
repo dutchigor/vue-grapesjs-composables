@@ -1,63 +1,63 @@
 import { reactive } from "vue"
+import reactiveCollection from "../utils/reactiveCollection"
 
-export default function (grapes, sector) {
+/**
+ * Object to manage the style properties of the selected component.
+ * @typedef PropManager
+ * @property {Object[]} sectors A reactive representation of all
+ * [GrapesJS sectors]{@link https://grapesjs.com/docs/api/sector.html#sector}
+ * @property {Function} getBuiltIn [Return built-in property definition]{@link https://grapesjs.com/docs/api/style_manager.html#getbuiltin}
+ * @property {Function} getBuiltInAll [Get all the available built-in property definitions]{@link https://grapesjs.com/docs/api/style_manager.html#getbuiltinall}
+ * @property {Function} addType [Add new property type]{@link https://grapesjs.com/docs/api/style_manager.html#addtype}
+ * @property {Function} getType [Get type]{@link https://grapesjs.com/docs/api/style_manager.html#gettype}
+ * @property {Function} getTypes [Get all types]{@link https://grapesjs.com/docs/api/style_manager.html#gettypes}
+ */
+
+/**
+ * Get object to manage the style properties of the selected component.
+ * @param {VGCconfig} grapes As provided by useGrapes
+ * @returns {PropManager}
+ */
+export default function (grapes) {
   // Ensure GrapesJs is not yet initialised
   if (grapes.initialized) throw new Error('useStyleProps must be executed before GrapesJs is initialised (onMount where useGrapes is executed)')
 
-  if (!grapes._cache.styleManager) grapes._cache.styleManager = {}
+  // Take style manager from cache if it already exists
+  if (!grapes._cache.styleManager) {
 
-  // Take block manager from cache if it already exists
-  if (!grapes._cache.styleManager[sector]) {
-
-    // Create placeholder element to contain the Style Manager.
-    // This is only needed because the style events in GrapesJs require the style manager to be appended somewhere.
-    // Note that the element is not attached to the DOM.
-    const SMplaceholder = document.createElement('div')
-
-    // Use custom selector manager
+    // Use custom style manager
     if (!grapes.config.styleManager) grapes.config.styleManager = {}
-    grapes.config.styleManager.appendTo = SMplaceholder
+    grapes.config.styleManager.custom = true
 
-    // Create variable to hold all up to date style properties.
-    const styles = grapes._cache.styleManager[sector] = reactive({})
+    // Create variable to hold all style properties for the selected component
+    const styles = grapes._cache.styleManager = reactive({
+      sectors: [],
+      getBuiltIn: () => { },
+      getBuiltInAll: () => { },
+      addType: () => { },
+      getType: () => { },
+      getTypes: () => { },
+    })
 
     // After GrapesJs is loaded.
     grapes.onInit((editor) => {
-      // Function to update all style properties to the currently active CSS rule.
-      function updateStyles() {
-        for (const style in styles) {
-          styles[style]._updateStyle()
+      // Create reactive representation of each sector and its properties 
+      styles.sectors = reactiveCollection(editor.StyleManager.getSectors(), {
+        modelOpts: {
+          overwrites: {
+            properties: cmp => reactiveCollection(cmp.value.get('properties'))
+          }
         }
-      }
+      })
 
-
-      // Populate styvles with all relevant style properties.
-      const models = editor.StyleManager.getProperties(sector).models
-      for (const mdl of models) {
-        styles[mdl.id] = new StyleProp(mdl)
-        styles[mdl.id]._updateStyle()
-      }
-
-      // Track selection of or updates to CSS rules.
-      editor.on('selector:custom', updateStyles)
+      // Bind property type management functions to the style manager
+      styles.getBuiltIn = editor.StyleManager.getBuiltIn.bind(editor.StyleManager)
+      styles.getBuiltInAll = editor.StyleManager.getBuiltInAll.bind(editor.StyleManager)
+      styles.addType = editor.StyleManager.addType.bind(editor.StyleManager)
+      styles.getType = editor.StyleManager.getType.bind(editor.StyleManager)
+      styles.getTypes = editor.StyleManager.getTypes.bind(editor.StyleManager)
     })
   }
 
-  return grapes._cache.styleManager[sector]
-}
-
-// Manage style property lifecycle using the style model from GrapesJs.
-class StyleProp {
-  constructor(model) {
-    this.model = model
-  }
-  // Make attributes and changed values reactive.
-  _updateStyle() {
-    this.attributes = { ...this.model.attributes }
-  }
-  // Update the style property in GrapesJs.
-  setValue(val) {
-    this.model.setValue(val)
-    this._updateStyle()
-  }
+  return grapes._cache.styleManager
 }
