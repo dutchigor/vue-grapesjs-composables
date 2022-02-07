@@ -1,5 +1,18 @@
 import { reactive, readonly } from "vue"
+/**
+ * Reactive object store the content created with GrapesJS.
+ * @typedef StorageManager
+ * @property {Object} content the [content of GrapesJS]{@link https://grapesjs.com/docs/modules/Storage.html#store-and-load-templates}
+ * with storageManager.id disabled
+ * @property {Function} load load new content to this object and trigger
+ * [GrapesJS load]{@link https://grapesjs.com/docs/api/storage_manager.html#load}
+ */
 
+/**
+ * 
+ * @param {VGCconfig} grapes 
+ * @returns {StorageManager}
+ */
 export default function (grapes) {
   // Ensure GrapesJs is not yet initialised
   if (grapes.initialized) throw new Error('useModal must be executed before GrapesJs is initialised (onMount where useGrapes is executed)')
@@ -7,7 +20,6 @@ export default function (grapes) {
   // Take storage manager from cache if it already exists
   if (!grapes._cache.content) {
     // Set storage type in config
-
     grapes.config.storageManager = {
       type: 'vue-reactive-storage',
       id: '',
@@ -24,15 +36,10 @@ export default function (grapes) {
     })
 
     grapes.onInit((editor) => {
-      // Add storage manager that:
+      // Add storage manager
       editor.StorageManager.add('vue-reactive-storage', {
-        /**
-     * Load the data
-     * @param  {Array} keys Array containing values to load, eg, ['gjs-components', 'gjs-styles', ...]
-     * @param  {Function} clb Callback function to call when the load is ended
-     * @param  {Function} clbErr Callback function to call in case of errors
-     */
-        load(keys, clb, clbErr) {
+        // Load from reactive storage
+        load(keys, clb) {
           const result = {};
 
           keys.forEach(key => {
@@ -43,13 +50,8 @@ export default function (grapes) {
           clb(result);
         },
 
-        /**
-         * Store the data
-         * @param  {Object} data Data object to store
-         * @param  {Function} clb Callback function to call when the load is ended
-         * @param  {Function} clbErr Callback function to call in case of errors
-         */
-        store(data, clb, clbErr) {
+        // Store to reactive storage
+        store(data, clb) {
           for (let key in data) {
             switch (key) {
               case 'components':
@@ -69,7 +71,7 @@ export default function (grapes) {
 
       editor.store()
 
-      //  - A function to load new content and triggers GrapesJs load
+      // A function to load new content and trigger GrapesJS load
       storage.load = function (newContent) {
         this.content = newContent
         editor.load()
