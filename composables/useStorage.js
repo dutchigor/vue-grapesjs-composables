@@ -2,7 +2,7 @@ import { reactive, readonly } from "vue"
 
 export default function (grapes) {
   // Ensure GrapesJs is not yet initialised
-  if (grapes.initialized) throw new Error('useModalmust be executed before GrapesJs is initialised (onMount where useGrapes is executed)')
+  if (grapes.initialized) throw new Error('useModal must be executed before GrapesJs is initialised (onMount where useGrapes is executed)')
 
   // Take storage manager from cache if it already exists
   if (!grapes._cache.content) {
