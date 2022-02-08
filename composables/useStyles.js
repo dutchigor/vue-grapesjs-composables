@@ -3,21 +3,29 @@ import reactiveCollection from "../utils/reactiveCollection"
 import reactiveModel from "../utils/reactiveModel"
 
 /**
- * The CSS Manager contains all the functions that GrapesJS provides in the
- * [CSS Composer]{@link https://grapesjs.com/docs/api/css_composer.html},
- * along with reactive representations of the CSS Rules.
- * @typedef {Object} CssManager
+ * The CSS Manager contains the lifecycle functions and reactive representations of the CSS Rules.
+ * @typedef CssManager
+ * @memberof module:useStyles 
+ * @inner
  * @property {Object[]} cssRules A reactive list of all the
  * [CSS rules]{@link https://grapesjs.com/docs/api/css_rule.html#cssrule} as defined in GrapesJS.
  * @property {Object} selected.rule A reactive representation of the selected
  * [CSS rule]{@link https://grapesjs.com/docs/api/css_rule.html#cssrule}.
  * @property {String} selected.selector The css selector that identifies the selected rule.
+ * @property {Function} addRules
+ * [Add a CSS rule]{@link https://grapesjs.com/docs/api/css_composer.html#addrules} via CSS string
+ * @property {Function} setRule
+ * [Add/update the CssRule]{@link https://grapesjs.com/docs/api/css_composer.html#setrule}
+ * @property {Function} remove [Remove rule]{@link https://grapesjs.com/docs/api/css_composer.html#remove},
+ * by CssRule or matching selector
+ * @property {Function} clear [Remove all rules]{@link https://grapesjs.com/docs/api/css_composer.html#clear}
  */
 
 /**
  * Fetch and, if necessary, initiate the CSS manager.
+ * @exports useStyles
  * @param {VGCconfig} grapes As provided by useGrapes
- * @returns {CssManager}
+ * @returns {module:useStyles~CssManager}
  */
 export default function useStyles(grapes) {
   // Take block manager from cache if it already exists
@@ -38,11 +46,10 @@ export default function useStyles(grapes) {
     // After GrapesJs is loaded.
     grapes.onInit((editor) => {
       // Map GrapesJS CSS Composer functions to manager
-      Object.keys(editor.Css).forEach(attr => {
-        if (typeof editor.Css[attr] === "function" && attr !== "constructor") {
-          cm[attr] = editor.Css[attr].bind(editor.Css)
-        }
-      })
+      cm.addRules = editor.Css.addRules.bind(editor.Css)
+      cm.setRule = editor.Css.setRule.bind(editor.Css)
+      cm.remove = editor.Css.remove.bind(editor.Css)
+      cm.clear = editor.Css.clear.bind(editor.Css)
 
       // Load CSS rules with all rules in GrapesJS
       cm.cssRules = reactiveCollection(editor.Css.getRules())

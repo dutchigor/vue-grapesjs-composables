@@ -3,19 +3,23 @@ import { onMounted, onBeforeUnmount, reactive, nextTick } from 'vue'
 
 /**
  * Reactive base state and functions to manage Vue GrapesJS Composables.
- * @typedef {Object} VGCconfig
+ * @typedef VGCconfig
  * @property {Object} config Reactive version of the provided GrapesJS configuration object
  * @property {boolean} initialized Whether GrapesJS has been initialized
- * @method onBeforeInit
- * @method onInit
+ * @property {VGCconfig~onBeforeInit} onBeforeInit Register function to be executed
+ * right before GrapesJS is initialized
+ * @property {VGCconfig~onInit} onInit Register function to be executed
+ * right after GrapesJS is initialized
  */
 
 /**
  * Initialize GrapesJS and make it available to the other composables
- * @param {Object} config Configuration options as defined by [GrapesJS]{https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js}
+ * @function useGrapes
+ * @param {Object} config Configuration options as defined by
+ * [GrapesJS]{@link https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js}
  * @returns {VGCconfig}
  */
-export default function (config) {
+export default function useGrapes(config) {
   const beforeInit = []
   const afterInit = []
 
@@ -35,13 +39,17 @@ export default function (config) {
     initialized: false,
 
     /**
-     * Register function to be executed right before GrapesJS is initialized
+     * @method onBeforeInit
+     * @memberof VGCconfig
+     * @inner
      * @param {Function} fn Function to register
      */
     onBeforeInit(fn) { beforeInit.push(fn) },
 
     /**
-     * Register function to be executed right after GrapesJS is initialized
+     * @method onInit
+     * @memberof VGCconfig
+     * @inner
      * @param {Function} fn Function to register
      */
     onInit(fn) {

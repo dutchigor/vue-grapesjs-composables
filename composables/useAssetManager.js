@@ -2,26 +2,36 @@ import { computed, reactive, readonly, ref } from "vue"
 import reactiveCollection from "../utils/reactiveCollection"
 
 /**
- * Object to manage the component tree.
+ * Object to manage the assets.
  * @typedef AssetManager
+ * @memberof module:useAssetManager
+ * @inner
  * @property {Object} assets A reactive representation of the collection of all 
  * [assets]{@link https://grapesjs.com/docs/api/asset.html#asset}
  * @property {Function} add [Add a new asset]{@link https://grapesjs.com/docs/api/assets.html#add}
  * @property {Function} remove [Remove an asset]{@link https://grapesjs.com/docs/api/assets.html#remove}
  * @property {Object} modal Object to handle the modal of the asset manager
  * @property {Boolean} modal.isOpen Whether the modal should be displayed
- * @property {Array} modal.types Array of asset types requested, eg. ['image']
- * @property {Function} modal.select A callback to select an asset. Takes (reactive) asset as input
+ * @property {String[]} modal.types Array of asset types requested, eg. ['image']
+ * @property {module:useAssetManager~AssetManager} modal.select A callback to select an asset.
  * @property {Function} modal.open [Open the asset modal]{@link https://grapesjs.com/docs/api/assets.html#open}
  * @property {Function} modal.close [Close the asset manager]{@link https://grapesjs.com/docs/api/assets.html#close}
  */
 
 /**
- * Get object to manage the assets.
- * @param {VGCconfig} grapes As provided by useGrapes
- * @returns {AssetManager}
+ * @callback selectAsset
+ * @memberof module:useAssetManager~AssetManager
+ * @param {Object} asset The [asset]{@link https://grapesjs.com/docs/api/asset.html#asset} to select
+ * @returns {Void}
  */
-export default function (grapes) {
+
+/**
+ * Get object to manage the assets.
+ * @exports useAssetManager
+ * @param {VGCconfig} grapes As provided by useGrapes
+ * @returns {module:useAssetManager~AssetManager}
+ */
+export default function useAssetManager(grapes) {
   // Ensure GrapesJs is not yet initialised
   if (grapes.initialized) throw new Error('useAssetManager must be executed before GrapesJs is initialised (onMount where useGrapes is executed)')
 

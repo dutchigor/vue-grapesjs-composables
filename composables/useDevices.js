@@ -5,17 +5,20 @@ import reactiveModel from "../utils/reactiveModel"
 /**
  * Reactive representation of the GrapesJS device state
  * @typedef ReactiveDevices
- * @property {Device[]} devices Proxy to a [collection of all Devices]{https://grapesjs.com/docs/api/device_manager.html#devices}
- * @property {Device} selected The currently selected Device
+ * @memberof module:useDevices
+ * @inner
+ * @property {Object[]} devices A reactive list of [all Devices]{@link https://grapesjs.com/docs/api/device.html#device}
+ * @property {Object} selected A reactive representation of the [currently selected Device]{@link https://grapesjs.com/docs/api/device.html#device}
  * @property {Function} select [Select]{@link https://grapesjs.com/docs/api/device_manager.html#select} device
  */
 
 /**
  * Provide reactive object that contains the state of the GrapesJs devices.
+ * @exports useDevices
  * @param {VGCconfig} grapes Response of useGrapes
- * @returns {ReactiveDevices}
+ * @returns {module:useDevices~ReactiveDevices}
  */
-export default function (grapes) {
+export default function useDevices(grapes) {
   // Take block manager from cache if it already exists
   if (!grapes._cache.devices) {
 

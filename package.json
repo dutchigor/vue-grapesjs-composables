@@ -15,10 +15,16 @@
   ],
   "author": "Igor Honhoff",
   "license": "MIT",
+  "scripts": {
+    "doc": "jsdoc-to-readme --src composables/* utils/*"
+  },
   "peerDependencies": {
     "vue": "^3.0.0"
   },
   "dependencies": {
     "grapesjs": "^0.18.2"
+  },
+  "devDependencies": {
+    "jsdoc-to-readme": "^1.0.3"
   }
 }

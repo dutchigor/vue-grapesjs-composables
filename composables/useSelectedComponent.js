@@ -4,16 +4,19 @@ import reactiveModel from '../utils/reactiveModel'
 
 /**
  * Object to manage the component tree.
- * @typedef Component
- * @property {Object} wrapper A reactive representation of the
+ * @typedef Selected
+ * @memberof module:useSelectedComponent
+ * @inner
+ * @property {Object} component A reactive representation of the
  * [selected component]{@link https://grapesjs.com/docs/api/component.html#component},
  * Where the child components, attributes and classes have also been made reactive.
  */
 
 /**
  * Get object to manage the selected component.
+ * @exports useSelectedComponent
  * @param {VGCconfig} grapes As provided by useGrapes
- * @returns {Component}
+ * @returns {module:useSelectedComponent~Selected}
  */
 export default function useSelectedComponent(grapes) {
   // Take selected component from cache if it already exists

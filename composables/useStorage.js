@@ -1,19 +1,29 @@
 import { reactive, readonly } from "vue"
 /**
- * Reactive object store the content created with GrapesJS.
+ * Reactive object store containing the content created with GrapesJS.
  * @typedef StorageManager
+ * @memberof module:useStorage
+ * @inner
  * @property {Object} content the [content of GrapesJS]{@link https://grapesjs.com/docs/modules/Storage.html#store-and-load-templates}
  * with storageManager.id disabled
- * @property {Function} load load new content to this object and trigger
+ * @property {module:useStorage~StorageManager.load} load load new content to this object and trigger
  * [GrapesJS load]{@link https://grapesjs.com/docs/api/storage_manager.html#load}
  */
 
 /**
- * 
- * @param {VGCconfig} grapes 
- * @returns {StorageManager}
+ * @method load
+ * @memberof module:useStorage~StorageManager
+ * @param {Object} newContent An object containing the new content as defined in {@link StorageManager}
+ * @returns {Void}
  */
-export default function (grapes) {
+
+/**
+ * Get reactive store of the GrapesJS content.
+ * @exports useStorage
+ * @param {VGCconfig} grapes As provided by useGrapes
+ * @returns {module:useStorage~StorageManager}
+ */
+export default function useStorage(grapes) {
   // Ensure GrapesJs is not yet initialised
   if (grapes.initialized) throw new Error('useModal must be executed before GrapesJs is initialised (onMount where useGrapes is executed)')
 

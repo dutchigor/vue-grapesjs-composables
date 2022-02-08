@@ -4,6 +4,8 @@ import reactiveCollection from "../utils/reactiveCollection"
 /**
  * Object to manage the style properties of the selected component.
  * @typedef PropManager
+ * @memberof module:useStyleProps
+ * @inner
  * @property {Object[]} sectors A reactive representation of all
  * [GrapesJS sectors]{@link https://grapesjs.com/docs/api/sector.html#sector}
  * @property {Function} getBuiltIn [Return built-in property definition]{@link https://grapesjs.com/docs/api/style_manager.html#getbuiltin}
@@ -15,10 +17,11 @@ import reactiveCollection from "../utils/reactiveCollection"
 
 /**
  * Get object to manage the style properties of the selected component.
+ * @exports useStyleProps
  * @param {VGCconfig} grapes As provided by useGrapes
- * @returns {PropManager}
+ * @returns {module:useStyleProps~PropManager}
  */
-export default function (grapes) {
+export default function useStyleProps(grapes) {
   // Ensure GrapesJs is not yet initialised
   if (grapes.initialized) throw new Error('useStyleProps must be executed before GrapesJs is initialised (onMount where useGrapes is executed)')
 

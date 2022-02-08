@@ -5,7 +5,9 @@ import reactiveModel from '../utils/reactiveModel'
 /**
  * Object to manage the component tree.
  * @typedef ComponentTree
- * @property {Object} wrapper A reactive representation of the component tree, with 
+ * @memberof module:useComponentTree
+ * @inner
+ * @property {Object} tree A reactive representation of the component tree, with 
  * [GrapesJS components]{@link https://grapesjs.com/docs/api/component.html#component}
  * @property {Function} select [Select a component]{@link https://grapesjs.com/docs/api/editor.html#select}
  * @property {Function} selectAdd [Add component to selection]{@link https://grapesjs.com/docs/api/editor.html#selectadd}
@@ -15,15 +17,16 @@ import reactiveModel from '../utils/reactiveModel'
 
 /**
  * Get object to manage the component tree.
+ * @exports useComponentTree
  * @param {VGCconfig} grapes As provided by useGrapes
- * @returns {ComponentTree}
+ * @returns {module:useComponentTree~ComponentTree}
  */
 export default function useComponentTree(grapes) {
   // Take component tree from cache if it already exists
   if (!grapes._cache.compTree) {
 
     const components = grapes._cache.compTree = reactive({
-      wrapper: {},
+      tree: {},
       select() { },
       selectAdd() { },
       selectRemove() { },
@@ -39,7 +42,7 @@ export default function useComponentTree(grapes) {
       components.selectToggle = editor.selectToggle
 
       // Set top level component
-      components.wrapper = reactiveModel(editor.getWrapper(), {
+      components.tree = reactiveModel(editor.getWrapper(), {
         overwrites: {
           components: getChildren,
         },
