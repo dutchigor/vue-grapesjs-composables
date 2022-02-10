@@ -41,6 +41,10 @@ export default function useStyles(grapes) {
         rule: {},
         selector: '',
       },
+      addRules: () => { },
+      setRule: () => { },
+      remove: () => { },
+      clear: () => { },
     })
 
     // After GrapesJs is loaded.
