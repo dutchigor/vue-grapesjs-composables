@@ -1,4 +1,4 @@
-import { computed, isReactive, shallowReactive, shallowRef, triggerRef } from "vue"
+import { computed, isReactive, markRaw, shallowReactive, shallowRef, triggerRef } from "vue"
 
 function getMethods(model) {
   // const objChain = []
@@ -33,7 +33,7 @@ export default function reactiveModel(model, options = {}) {
   const modelRef = shallowRef(model)
 
   const proxy = shallowReactive({
-    _model: model
+    _model: markRaw(model)
   })
 
 

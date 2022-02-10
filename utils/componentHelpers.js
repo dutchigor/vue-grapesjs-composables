@@ -49,3 +49,9 @@ export function getClasses(compRef) {
   const classes = compRef.value.get('classes')
   return reactiveCollection(classes)
 }
+
+// Get a reactive list of traits for the component type
+export function getTraits(compRef) {
+  const traits = compRef.value.get('traits')
+  return reactiveCollection(traits)
+}

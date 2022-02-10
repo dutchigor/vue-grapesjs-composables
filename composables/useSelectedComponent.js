@@ -1,5 +1,5 @@
 import { reactive } from "vue"
-import { getAttributes, getClasses, getChildren, cmpEvents } from '../utils/componentHelpers'
+import { getAttributes, getClasses, getChildren, cmpEvents, getTraits } from '../utils/componentHelpers'
 import reactiveModel from '../utils/reactiveModel'
 
 /**
@@ -36,6 +36,7 @@ export default function useSelectedComponent(grapes) {
             components: getChildren,
             attributes: getAttributes,
             classes: getClasses,
+            traits: getTraits,
           },
           events: cmpEvents,
         })
