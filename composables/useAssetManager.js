@@ -1,4 +1,4 @@
-import { computed, reactive, readonly, ref } from "vue"
+import { computed, reactive, readonly } from "vue"
 import reactiveCollection from "../utils/reactiveCollection"
 
 /**
@@ -38,12 +38,12 @@ export default function useAssetManager(grapes) {
   // Take asset manager from cache if it already exists
   if (!grapes._cache.assetManager) {
     // Create object to manage assets and the Asset Manager modal
-    const am = grapes._cache.assetManager = {
+    const am = grapes._cache.assetManager = reactive({
       assets: [],
-      modal: reactive({
+      modal: {
         isOpen: false
-      })
-    }
+      }
+    })
 
     // Use custom asset manager
     if (!grapes.config.assetManager) grapes.config.assetManager = {}
