@@ -40,12 +40,13 @@ export default function useState(grapes) {
       }
 
       // Update the reactive state based on the active selector in GrapesJs
+      state.all = reactiveCollection(editor.Selectors.getStates())
+
+      // Fetch the latest state from GrapesJs
       function updateState() {
-        state.all = reactiveCollection(editor.Selectors.getStates())
         state.selected = editor.Selectors.getState()
       }
 
-      // Fetch the latest state from GrapesJs
       updateState()
 
       // Track the changes in GrapesJs for state updates

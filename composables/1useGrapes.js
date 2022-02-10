@@ -14,7 +14,7 @@ import { onMounted, onBeforeUnmount, reactive, nextTick } from 'vue'
 
 /**
  * Initialize GrapesJS and make it available to the other composables
- * @function useGrapes
+ * @exports useGrapes
  * @param {Object} config Configuration options as defined by
  * [GrapesJS]{@link https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js}
  * @returns {VGCconfig}
@@ -42,7 +42,7 @@ export default function useGrapes(config) {
      * @method onBeforeInit
      * @memberof VGCconfig
      * @inner
-     * @param {Function} fn Function to register
+     * @param {Function} fn Function to register. Does not receive any parameters.
      */
     onBeforeInit(fn) { beforeInit.push(fn) },
 
@@ -50,7 +50,7 @@ export default function useGrapes(config) {
      * @method onInit
      * @memberof VGCconfig
      * @inner
-     * @param {Function} fn Function to register
+     * @param {Callback} fn Function to register. Receives the GrapesJS editor as a parameter.
      */
     onInit(fn) {
       if (this.initialized) fn(editor)

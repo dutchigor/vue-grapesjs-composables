@@ -1,12 +1,122 @@
-# Introduction
-Write readme!
+<div id="top"></div>
 
-# API specification
+# Vue GrapesJS Composables
+<!-- PROJECT SHIELDS -->
+
+<!-- PROJECT LOGO -->
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <li><a href="#api-specification">API specification</a></li>
+  </ol>
+</details>
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+* Create a bridge between Vue and GrapesJS
+    * Designed to replace the ui around the canvas
+    * Provide reactive representations of the GrapesJS modules instead
+    * Only includes modules that can not simply be replaced with Vue
+        * If needed, the rest is still available from the editor directly
+    * Converts Backbone collections and Models and maintains their functions
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- GETTING STARTED -->
+## Getting Started
+Please follow the instructions below to set your project up with Vue GrapesJS Composables.
+
+### Prerequisites
+Vue GrapesJS Composables includes GrapesJS. It is designed to be used as Vue composables and as such, can only be used in a Vue 3 project
+
+### Installation
+This package is simply installed as a dependency to a Vue 3 project. As such the steps are:
+1. Install Vue 3 using you preferred method/template.
+1. Install Vue GrapesJS Composables:
+    * `npm install vue-grapesjs-composables`
+    * or `yarn add vue-grapesjs-composables`
+1. Import the package in the component(s) using the composables:
+    * `import { useGrapes } from vue-grapesjs-composables`
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- USAGE EXAMPLES -->
+## Usage
+
+* Create config object as per GrapesJS definition
+    * Set config.container to a ref containing the canvas placeholder to make the component reusable
+* Initiate GrapesJS using the useGrapes composable
+* access the reactive representations of modules as needed by calling the appropriate composables
+* Provide list of composables and how to use them
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See `LICENSE.txt` for more information.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- CONTACT -->
+## Contact
+
+Please post any questions you might have in the Github discussions or create an issue if you believe you have found a bug. Project Link: https://github.com/dutchigor/vue-grapesjs-composables.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
+
+* This project has been inspired heavily by [vue-backbone](https://github.com/mikeapr4/vue-backbone)
+* Adn of course this would not be possible without the projects that it is bridging:
+    * [GrapesJS](https://grapesjs.com/)
+    * [Vue.js](https://v3.vuejs.org/)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## API specification
 <!-- api -->
 
 ### Modules
 
 <dl>
+<dt><a href="#module_useGrapes">useGrapes</a> ⇒ <code><a href="#VGCconfig">VGCconfig</a></code></dt>
+<dd><p>Initialize GrapesJS and make it available to the other composables</p>
+</dd>
 <dt><a href="#module_useAssetManager">useAssetManager</a> ⇒ <code><a href="#module_useAssetManager..AssetManager">AssetManager</a></code></dt>
 <dd><p>Get object to manage the assets.</p>
 </dd>
@@ -39,14 +149,6 @@ Write readme!
 </dd>
 </dl>
 
-### Functions
-
-<dl>
-<dt><a href="#useGrapes">useGrapes(config)</a> ⇒ <code><a href="#VGCconfig">VGCconfig</a></code></dt>
-<dd><p>Initialize GrapesJS and make it available to the other composables</p>
-</dd>
-</dl>
-
 ### Typedefs
 
 <dl>
@@ -54,6 +156,16 @@ Write readme!
 <dd><p>Reactive base state and functions to manage Vue GrapesJS Composables.</p>
 </dd>
 </dl>
+
+<a name="module_useGrapes"></a>
+
+### useGrapes ⇒ [<code>VGCconfig</code>](#VGCconfig)
+Initialize GrapesJS and make it available to the other composables
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| config | <code>Object</code> | Configuration options as defined by [GrapesJS](https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js) |
 
 <a name="module_useAssetManager"></a>
 
@@ -112,7 +224,8 @@ Fetch and, if necessary, initiate the Block Manager.
 <a name="module_useBlockManager..BlockManager"></a>
 
 #### useBlockManager~BlockManager
-The Block Manager provides a reactive representation of the blocks available in GrapesJS,along with functions needed to handle them.
+The Block Manager provides a reactive representation of the blocks available in GrapesJS,
+along with functions needed to handle them.
 
 **Kind**: inner typedef of [<code>useBlockManager</code>](#module_useBlockManager)  
 **Properties**
@@ -338,17 +451,6 @@ The CSS Manager contains the lifecycle functions and reactive representations of
 | remove | <code>function</code> | [Remove rule](https://grapesjs.com/docs/api/css_composer.html#remove), by CssRule or matching selector |
 | clear | <code>function</code> | [Remove all rules](https://grapesjs.com/docs/api/css_composer.html#clear) |
 
-<a name="useGrapes"></a>
-
-### useGrapes(config) ⇒ [<code>VGCconfig</code>](#VGCconfig)
-Initialize GrapesJS and make it available to the other composables
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| config | <code>Object</code> | Configuration options as defined by [GrapesJS](https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js) |
-
 <a name="VGCconfig"></a>
 
 ### VGCconfig
@@ -376,7 +478,7 @@ Reactive base state and functions to manage Vue GrapesJS Composables.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| fn | <code>function</code> | Function to register |
+| fn | <code>function</code> | Function to register. Does not receive any parameters. |
 
 <a name="VGCconfig..onInit"></a>
 
@@ -385,7 +487,9 @@ Reactive base state and functions to manage Vue GrapesJS Composables.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| fn | <code>function</code> | Function to register |
+| fn | <code>Callback</code> | Function to register. Receives the GrapesJS editor as a parameter. |
 
 
 <!-- apistop -->
+
+<p align="right">(<a href="#top">back to top</a>)</p>
