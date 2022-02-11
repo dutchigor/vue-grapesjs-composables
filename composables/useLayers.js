@@ -5,7 +5,7 @@ import reactiveModel from '../utils/reactiveModel'
 /**
  * Object to manage the component tree.
  * @typedef ComponentTree
- * @memberof module:useComponentTree
+ * @memberof module:useLayers
  * @inner
  * @property {Object} tree A reactive representation of the component tree, with 
  * [GrapesJS components]{@link https://grapesjs.com/docs/api/component.html#component}
@@ -17,16 +17,16 @@ import reactiveModel from '../utils/reactiveModel'
 
 /**
  * Get object to manage the component tree.
- * @exports useComponentTree
+ * @exports useLayers
  * @param {VGCconfig} grapes As provided by useGrapes
- * @returns {module:useComponentTree~ComponentTree}
+ * @returns {module:useLayers~ComponentTree}
  */
-export default function useComponentTree(grapes) {
+export default function useLayers(grapes) {
   // Take component tree from cache if it already exists
-  if (!grapes._cache.compTree) {
+  if (!grapes._cache.layers) {
 
-    const components = grapes._cache.compTree = reactive({
-      tree: {},
+    const layers = grapes._cache.layers = reactive({
+      wrapper: {},
       select() { },
       selectAdd() { },
       selectRemove() { },
@@ -36,13 +36,13 @@ export default function useComponentTree(grapes) {
     // After GrapesJs is loaded.
     grapes.onInit((editor) => {
       // Set selection functions
-      components.select = editor.select
-      components.selectAdd = editor.selectAdd
-      components.selectRemove = editor.selectRemove
-      components.selectToggle = editor.selectToggle
+      layers.select = editor.select
+      layers.selectAdd = editor.selectAdd
+      layers.selectRemove = editor.selectRemove
+      layers.selectToggle = editor.selectToggle
 
       // Set top level component
-      components.tree = reactiveModel(editor.getWrapper(), {
+      layers.wrapper = reactiveModel(editor.getWrapper(), {
         overwrites: {
           components: getChildren,
         },
@@ -51,5 +51,5 @@ export default function useComponentTree(grapes) {
     })
   }
 
-  return grapes._cache.compTree
+  return grapes._cache.layers
 }
