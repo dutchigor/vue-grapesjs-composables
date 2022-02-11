@@ -15,6 +15,8 @@ import reactiveCollection from "../utils/reactiveCollection"
  * in GrapesJS (called on e.g. the dragstart event on the rendered block).
  * @property {Function} dragStop A callback to [trigger the drop of a block]{@link https://grapesjs.com/docs/modules/Blocks.html#customization}
  * in GrapesJS (called on e.g. the dragend event on the rendered block).
+ * @property {Function} add [Add a new block]{@link https://grapesjs.com/docs/api/block_manager.html#add}
+ * @property {Function} remove [Remove a block]{@link https://grapesjs.com/docs/api/block_manager.html#remove}
  */
 
 /**
@@ -40,6 +42,8 @@ export default function useBlockManager(grapes) {
       renderedBlocks: [],
       dragStart() { },
       dragStop() { },
+      add() { },
+      remove() { },
     })
 
     // After GrapesJs is loaded.
@@ -49,6 +53,8 @@ export default function useBlockManager(grapes) {
       bm.renderedBlocks = reactiveCollection(editor.Blocks.getAllVisible())
       bm.dragStart = editor.Blocks.startDrag.bind(editor.Blocks)
       bm.dragStop = editor.Blocks.endDrag.bind(editor.Blocks)
+      bm.add = editor.Blocks.add.bind(editor.Blocks)
+      bm.remove = editor.Blocks.remove.bind(editor.Blocks)
     })
   }
 
