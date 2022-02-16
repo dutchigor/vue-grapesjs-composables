@@ -55,9 +55,6 @@ export default function useStyles(grapes) {
       cm.remove = editor.Css.remove.bind(editor.Css)
       cm.clear = editor.Css.clear.bind(editor.Css)
 
-      // Load CSS rules with all rules in GrapesJS
-      cm.cssRules = reactiveCollection(editor.Css.getRules())
-
       // Manage Rule styles using dedicated GrapesJS functions
       function proxyStyle(modelRef) {
         return new Proxy(modelRef, {
@@ -71,6 +68,11 @@ export default function useStyles(grapes) {
           }
         })
       }
+
+      // Load CSS rules with all rules in GrapesJS
+      cm.cssRules = reactiveCollection(editor.Css.getAll(), {
+        modelOpts: { overwrites: { style: proxyStyle } }
+      })
 
       // Update selected style in manager
       function updateSelected() {
