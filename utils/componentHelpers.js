@@ -1,3 +1,4 @@
+import { computed } from 'vue'
 import reactiveCollection from './reactiveCollection'
 
 // Backbone collection events that trigger component updates
@@ -50,8 +51,18 @@ export function getClasses(compRef) {
   return reactiveCollection(classes)
 }
 
+// Use the trait methods to manage the value property
+function getTraitValue(compRef) {
+  return computed({
+    get: () => compRef.value.getValue(),
+    set: (val) => compRef.value.setTargetValue(val),
+  })
+}
+
 // Get a reactive list of traits for the component type
 export function getTraits(compRef) {
   const traits = compRef.value.get('traits')
-  return reactiveCollection(traits)
+  return reactiveCollection(traits, {
+    modelOpts: { overwrites: { value: getTraitValue } }
+  })
 }
