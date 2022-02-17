@@ -86,7 +86,7 @@ const grapes = useGrapes({
 
 Note that Vue GrapesJS Composables by default removes all panels from the GrapesJS configuration and sets the height of the canvas to 100%. This aligns better with the notion that the management UI will be provided with Vue. This can however be overwritten if desired simply by providing the panels or height properties to the configuration object.
 
-See [specification for useGrapes](./docs/API-specs.md#module_useGrapes) for more details.
+See [useGrapes API specification](./docs/API-specs.md#module_useGrapes) for more details.
 
 With GrapesJS initiated, the rest of the UI can be built with your own UI components utilising the rest of the composables as required. This means that the API specifications from GrapesJS still apply to each object. However, instead of listening to, and acting on events, and using getter functions, up-to-date [Model](https://backbonejs.org/#Model) attributes and [Collection](https://backbonejs.org/#Collection) arrays are accessible directly from the reactive object. All other functions on the Model/Collection can still be used as normal.
 
@@ -94,7 +94,7 @@ Lets go through each of the available modules and see how we can implement them 
 ### Blocks
 Configure the blocks as you would normally in the config object provided to useGrapes. Use useBlocks to access a reactive list of blocks and the methods required to handle the drag and drop. Simply render the list in a component and use the drag and drop functions on the dragstart and dragend events on each block.
 
-See [specification for useBlocks](./docs/API-specs.md#module_useBlockManager) for more details.
+See [useBlocks API specification](./docs/API-specs.md#module_useBlockManager) for more details.
 
 #### Example
 
@@ -126,6 +126,8 @@ Components and component types are defined in the [usual GrapesJS way](https://g
 
 #### Selected
 The component that you mostly access and manipulate is the selected component. As such, access to a reactive representation of this component (meaning this will always be the up to date selected component) is available from the useSelectedComponent composable. From here you can do things like manage the component classes, traits, child components, etc. See the sections below for examples.
+
+See [useSelectedComponent API specification](./docs/API-specs.md#module_useSelectedComponent) for more details.
 
 #### Traits
 The selected component includes a list of traits. Traits are defined in the component definition [as usual](https://grapesjs.com/docs/modules/Traits.html#add-traits-to-components). However, instead of defining trait types through a plugin, define a Vue component for each trait type. Then when rendering the traits of a component, render the relevant Vue component for each trait based on the type field.
@@ -211,16 +213,24 @@ As an alternative, a reactive list of all available CSS rules, with direct acces
 #### Classes
 A reactive array of the classes on the selected component are available by accessing the classes property on the selected component through the useSelectedComponent composable. This array provides methods for adding and removing classes and the active status can be set on each class.
 
+See [useSelectedComponent API specification](./docs/API-specs.md#module_useSelectedComponent) for more details.
+
 #### State
 The available and selected states can be accessed with the useState composable. This provides a reactive object that includes an up-to-date list of all the states, the name of the selected state and a method to change the selected state.
+
+See [useState API specification](./docs/API-specs.md#module_useState) for more details.
 
 #### Style Properties
 A reactive list of the properties on the selected Component or Rule is available through the useStyleProps composable. This provides a list of selectors, each containing a list of properties, along with methods to manage the property types.
 
 To render the properties, create a component for each property type. This can include custom types. You can then dynamically render the relevant type for each component base on its type attribute.
 
+See [useStyleProps API specification](./docs/API-specs.md#module_useStyleProps) for more details.
+
 #### CSS Rules
 If a more customised experience for selecting or updating the CSS rules is required, a reactive list of CSS rules can be accessed through the useStyles composable. This returns a list of all CSS rules, the selected rule, and methods to manage the list of rules.
+
+See [useStyles API specification](./docs/API-specs.md#module_useStyles) for more details.
 
 #### Examples
 Styling.vue
@@ -305,6 +315,8 @@ const { prop } = defineProps(['prop'])
 ### Layers
 A hierarchical reactive representation of the component layers in the canvas is available through useLayers. This provides access to the wrapper component and all child components can be access through the components property on each component.
 
+See [useLayers API specification](./docs/API-specs.md#module_useLayers) for more details.
+
 #### Example
 ComponentTree.vue
 ```vue
@@ -328,6 +340,8 @@ const layers = useLayers(grapes)
 
 ### Devices
 Resizing the canvas to model a specific device setting is still done by managing the devices in GrapesJS. A reactive interface in to these devices is provided by the useDevices composable. This includes a list of all devices with methods to manage the list, and the selected device with a method to select another device.
+
+See [useDevices API specification](./docs/API-specs.md#module_useDevices) for more details.
 
 #### Example
 ```vue
@@ -354,6 +368,8 @@ const deviceMgr = useDevices(grapes)
 Vue GrapesJS Composables allows you to replace the default asset manager with a custom one. To do this, call the useAssetManager composable. This provides a reactive object containing all the details on the state of the asset modal, along with methods to manage the assets.
 
 After useAssetManager is called, GrapesJS will update the reactive object instead of opening the asset manager modal when an asset is requested. It is then up to you to build a modal using that object. Use the isOpen attribute of the modal to show it when needed.
+
+See [useAssetManager API specification](./docs/API-specs.md#module_useAssetManager) for more details.
 
 #### Example
 ```vue
@@ -389,6 +405,8 @@ function select(asset) {
 ### Modal
 Much like with the Asset Manager, you can replace the GrapesJS modal with a custom one. To do this, call the useModal composable which returns a reactive object containing all the modal details. Use this reactive object to create your own modal component and display this when the open attribute on the modal object is true. Make sure to use the close function to close the modal so that GrapesJS knows that the modal has been closed.
 
+See [useModal API specification](./docs/API-specs.md#module_useModal) for more details.
+
 #### Example
 ```vue
 <script setup>
@@ -413,6 +431,8 @@ const modal = useModal(grapes)
 To access the content (html and css) created with GrapesJS, Vue GrapesJS Composables provides a reactive object through the useStorage composable. This object includes read only access to the entire content, along with a function to load new content. It is then up to you to sync the content with your data provider.
 
 Note that loading new content replaces the existing content so for updates, make sure to pass the whole content and not just the changes. However, if you are making updates, consider if it might not be better to use the component or style interface.
+
+See [useStorage API specification](./docs/API-specs.md#module_useStorage) for more details.
 
 ### Accessing the GrapesJS editor
 Above are all the GrapesJS modules, models, and functions that Vue GrapesJS Composables provides. This leaves multiple modules and parts of modules not available. The decision to only provide the above functionality is based on an estimate of where reactivity of GrapesJS collections and models makes most sense.
