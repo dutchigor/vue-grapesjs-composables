@@ -9,7 +9,9 @@ import reactiveModel from "../utils/reactiveModel"
  * @inner
  * @property {Object[]} devices A reactive list of [all Devices]{@link https://grapesjs.com/docs/api/device.html#device}
  * @property {Object} selected A reactive representation of the [currently selected Device]{@link https://grapesjs.com/docs/api/device.html#device}
- * @property {Function} select [Select]{@link https://grapesjs.com/docs/api/device_manager.html#select} device
+ * @property {Function} select [Select device]{@link https://grapesjs.com/docs/api/device_manager.html#select}
+ * @property {Function} add [Add a device]{@link https://grapesjs.com/docs/api/device_manager.html#add}
+ * @property {Function} remove [Remove a device]{@link https://grapesjs.com/docs/api/device_manager.html#remove}
  */
 
 /**
@@ -25,12 +27,17 @@ export default function useDevices(grapes) {
     // Create variable to hold all up to date selector properties.
     const dm = grapes._cache.devices = reactive({
       devices: [],
-      selected: {}
+      selected: {},
+      select() { },
+      add() { },
+      remove() { },
     })
 
     // After GrapesJs is loaded.
     grapes.onInit((editor) => {
       dm.select = editor.Devices.select.bind(editor.Devices)
+      dm.add = editor.Devices.add.bind(editor.Devices)
+      dm.remove = editor.Devices.remove.bind(editor.Devices)
 
       // Update the reactive state based on the device selected in GrapesJs
       function updateSelected(device) {
