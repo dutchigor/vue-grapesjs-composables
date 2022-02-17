@@ -1,4 +1,4 @@
-import gjs from 'grapesjs'
+import grapesjs from 'grapesjs'
 import { onMounted, onBeforeUnmount, reactive, nextTick } from 'vue'
 
 /**
@@ -65,7 +65,7 @@ export default function useGrapes(config) {
     await nextTick()
 
     for (const fn of beforeInit) { fn() }
-    editor = gjs.init(grapes.config)
+    editor = grapesjs.init(grapes.config)
     grapes.initialized = true
     for (const fn of afterInit) { fn(editor) }
   })

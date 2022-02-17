@@ -2,7 +2,7 @@
   "name": "vue-grapesjs-composables",
   "version": "0.2.0",
   "description": "This package makes it easy to implement a GrapesJS editor in Vue, and implement Vue components to control the editor. It does this by providing composables for Vue 3 that return reactive objects for the different API modules of GrapesJS.",
-  "main": "index.js",
+  "main": "vue-grapesjs-composables.js",
   "keywords": [
     "Vue",
     "Vue 3",
@@ -16,7 +16,8 @@
   "author": "Igor Honhoff",
   "license": "MIT",
   "scripts": {
-    "doc": "jsdoc2md --files src/composables/*.js --template docs/template.hbs > docs/API-specs.md"
+    "docs": "jsdoc2md --files src/composables/*.js --template docs/template.hbs > docs/API-specs.md",
+    "build": "rollup -c"
   },
   "peerDependencies": {
     "vue": "^3.0.0"
@@ -25,6 +26,10 @@
     "grapesjs": "^0.18.3"
   },
   "devDependencies": {
-    "jsdoc-to-markdown": "^7.1.1"
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "jsdoc-to-markdown": "^7.1.1",
+    "rollup": "^2.67.2",
+    "rollup-plugin-terser": "^7.0.2"
   }
 }
