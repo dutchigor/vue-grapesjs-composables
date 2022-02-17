@@ -63,6 +63,8 @@ All of Vue GrapesJS Composables is accessible as composables in Vue components.
 ### Initiate GrapesJS
 To initialise GrapesJS, create a div with a ref in a component which will contain the canvas. From that component, call useGrapes in the setup function of that component. To Configure GrapesJS, provide the configuration object as defined in the [GrapesJS API Reference](https://grapesjs.com/docs/api/editor.html#editor). As with normal GrapesJS, the starting content can either be added in the canvas div or in the configuration object.
 
+GrapesJS also requires a css file to handle the component highlighting. This is provided with Vue GrapesJS Composables and can be imported into main.js or the component containing the canvas from `vue-grapesjs-composables/css/vue-grapes.css`.
+
 ```vue
 <template>
   <div ref="canvas">
@@ -72,6 +74,7 @@ To initialise GrapesJS, create a div with a ref in a component which will contai
 
 <script setup>
 import { useGrapes } from 'vue-grapesjs-composables'
+import 'vue-grapesjs-composables/css/vue-grapes.css'
 
 // Use ref to determine container for the canvas 
 const canvas = ref(null)
