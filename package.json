@@ -16,7 +16,7 @@
   "author": "Igor Honhoff",
   "license": "MIT",
   "scripts": {
-    "doc": "jsdoc-to-readme --src composables/* utils/*"
+    "doc": "jsdoc2md --files src/composables/*.js --template docs/template.hbs > docs/API-specs.md"
   },
   "peerDependencies": {
     "vue": "^3.0.0"

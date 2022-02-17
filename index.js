@@ -1,4 +1,4 @@
-export { default as useGrapes } from './src/composables/1useGrapes'
+export { default as useGrapes } from './src/composables/useGrapes'
 export { default as useStyleProps } from './src/composables/useStyleProps'
 export { default as useState } from './src/composables/useState'
 export { default as useLayers } from './src/composables/useLayers'
