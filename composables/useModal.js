@@ -39,19 +39,32 @@ export default function useModal(grapes) {
       close() { },
     })
 
+    // Provide node content as string, with html escaped in case of a text node
+    function getHtml(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const el = document.createElement('div')
+        el.innerText = node.wholeText
+        return el.innerHTML
+      } else {
+        return node.outerHTML
+      }
+    }
+
     grapes.onInit((editor) => {
       // Update modal handler when modal is triggered
       editor.on('modal', props => {
-        for (const prop in props) {
-          if (prop !== 'close') modal[prop] = props[prop]
-        }
+        console.log({
+          props,
+          titleType: props.title.nodeType,
+          contentType: props.content.nodeType,
+        })
+        modal.open = props.open
+        modal.title = getHtml(props.title)
+        modal.content = getHtml(props.content)
+        modal.attributes = props.attributes
       })
 
-      // Handle modal closure
-      modal.close = function () {
-        this.open = false
-        editor.Modal.close()
-      }
+      modal.close = editor.Modal.close.bind(editor.Modal)
     })
   }
 
